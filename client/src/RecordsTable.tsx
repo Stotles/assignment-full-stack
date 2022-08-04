@@ -3,6 +3,7 @@ import { ColumnType } from "antd/lib/table";
 import React from "react";
 import { ProcurementRecord } from "./Api";
 import ProcurementRecordPreviewModal from "./ProcurementRecordPreview";
+import { formatCurrency } from './utils';
 
 type Props = {
   records: ProcurementRecord[];
@@ -39,8 +40,17 @@ function RecordsTable(props: Props) {
         title: "Buyer name",
         render: (record: ProcurementRecord) => record.buyer.name,
       },
+      {
+        title: "Value",
+        render: (record: ProcurementRecord) =>  [formatCurrency(record.value), record.currency].join(' ')
+      },
+      {
+        title: "Stage",
+        render: (record: ProcurementRecord) => record.stage
+      }
     ];
   }, []);
+
   return (
     <>
       <Table columns={columns} dataSource={records} pagination={false} />

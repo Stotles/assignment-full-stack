@@ -24,7 +24,7 @@ export class ProcurementRecord extends Model {
   buyer_id!: string;
 
   @Column
-  stage!: "TENDER" | "CONTRACT";
+  stage!: "TENDER" | "TenderIntent" | "CONTRACT";
 
   @AllowNull
   @Column(DataType.STRING)

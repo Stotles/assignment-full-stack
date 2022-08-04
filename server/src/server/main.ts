@@ -98,11 +98,32 @@ function serializeProcurementRecord(
     title: record.title,
     description: record.description,
     publishDate: record.publish_date,
+    value: record.value,
+    currency: record.currency,
+    // normalize field, assuming that TENDER and TenderIntent are same type
+    stage: getStageDescription(record),
     buyer: {
       id: buyer.id,
       name: buyer.name,
     },
   };
+}
+
+const getStageDescription = (record: ProcurementRecord) => {
+  switch (record.stage) {
+    case 'TENDER':
+    case 'TenderIntent':
+      // compare as strings should work as long as date in db is yyyy-mm-dd
+      const [now] = new Date().toISOString().split('T');
+      const isInFuture = record.close_date > now;
+      return record.close_date == null
+        ? 'Open'
+        : isInFuture
+          ? `Open until ${new Date(record.close_date).toLocaleDateString()}`
+          : 'Closed';
+    default:
+      return record.award_date && `Awarded ${new Date(record.award_date).toLocaleDateString()}`;
+  }
 }
 
 function unique<T>(items: Iterable<T>): T[] {
