@@ -39,6 +39,18 @@ function RecordsTable(props: Props) {
         title: "Buyer name",
         render: (record: ProcurementRecord) => record.buyer.name,
       },
+      {
+        title: "Value",
+        render: (record: ProcurementRecord) => `${record.value || 0} ${record.currency ||''}`
+      },
+      {
+        title: "Stage",
+        render: (record: ProcurementRecord) => {
+          if (record.stage == 'TENDER')
+            return new Date(record.closeDate) > new Date() ? `Open until ${new Date(record.closeDate).toLocaleDateString()}` : 'Closed'
+          return `Awarded on ${new Date(record.awardDate).toLocaleDateString()}`
+        }
+      },
     ];
   }, []);
   return (

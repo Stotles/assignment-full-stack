@@ -13,6 +13,11 @@ export type ProcurementRecord = {
     id: string;
     name: string;
   };
+  value: number;
+  currency: string;
+  stage: string;
+  closeDate: string;
+  awardDate: string;
 };
 
 export type SearchRecordsResponse = {
