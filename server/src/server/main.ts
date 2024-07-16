@@ -5,6 +5,8 @@ import {
   ProcurementRecordDto,
   RecordSearchRequest,
   RecordSearchResponse,
+  BuyerDto,
+  BuyersResponse
 } from "./api_types";
 import { Buyer } from "./db/Buyer";
 import { ProcurementRecord } from "./db/ProcurementRecord";
@@ -42,13 +44,14 @@ app.use(express.json());
 
 type RecordSearchFilters = {
   textSearch?: string;
+  buyer?:string;
 };
 
 /**
  * Queries the database for procurement records according to the search filters.
  */
 async function searchRecords(
-  { textSearch }: RecordSearchFilters,
+  { textSearch, }: RecordSearchFilters,
   offset: number,
   limit: number
 ): Promise<ProcurementRecord[]> {
@@ -76,6 +79,18 @@ async function searchRecords(
       }
     );
   }
+}
+
+/**
+ * Queries the database for all buyers.
+ */
+async function listBuyers(): Promise<Buyer[]> {
+  return await sequelize.query(
+    "SELECT * FROM buyers",
+    {
+      model: Buyer,
+    }
+  );
 }
 
 /**
@@ -107,6 +122,19 @@ function serializeProcurementRecord(
     stage: record.stage,
     closeDate: record.close_date,
     awardDate: record.award_date,
+  };
+}
+
+/**
+ * Converts a DB-style ProcurementRecord object to an API type.
+ * Assumes that all related objects (buyers) are prefetched upfront and passed in the `buyersById` map
+ */
+function serializeBuyer(
+  record: Buyer,
+): BuyerDto {
+  return {
+    id: record.id,
+    name: record.name,
   };
 }
 
@@ -170,6 +198,24 @@ app.post("/api/records", async (req, res) => {
       records.slice(0, limit) // only return the number of records requested
     ),
     endOfResults: records.length <= limit, // in this case we've reached the end of results
+  };
+
+  res.json(response);
+});
+
+
+/**
+ * This endpoint implements basic way to list all buyers.
+ * Todo for large number of buyers this should be filtered and/or paginated too
+ */
+app.get("/api/buyers", async (req, res) => {
+  const requestPayload = req.body as RecordSearchRequest;
+
+  // We fetch all records.
+  const buyers = await listBuyers();
+
+  const response: BuyersResponse = {
+    buyers: await buyers.map((buyer) => serializeBuyer(buyer)),
   };
 
   res.json(response);

@@ -1,8 +1,11 @@
-import { Input } from "antd";
+import { Input, Select } from "antd";
 import React from "react";
+import Api, { Buyer } from "./Api";
+import { DefaultOptionType } from "antd/lib/select";
 
 export type SearchFilters = {
-  query: string;
+  textSearch: string;
+  buyer: string;
 };
 
 type Props = {
@@ -12,12 +15,38 @@ type Props = {
 
 function RecordSearchFilters(props: Props) {
   const { filters, onChange } = props;
+  const [buyers, setBuyers] = React.useState<
+    Buyer[] | undefined
+  >();  
 
-  const handleQueryChange = React.useCallback(
+  /**
+   * fetching the buyers inside the filter, because for large number of buyers I want the filter to be able to
+   * control fetching the buyers list
+   * using an effect to fetch the buyers so it can be reused for filtering/pagination
+   */ 
+  React.useEffect(() => {
+    void (async () => {
+      const api = new Api();
+      const response = await api.buyersList();
+        setBuyers(response.buyers);
+    })();
+  }, []);
+
+  const handleTextSearchChange = React.useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       onChange({
         ...filters,
-        query: e.currentTarget.value,
+        textSearch: e.currentTarget.value,
+      });
+    },
+    [onChange, filters]
+  );
+
+  const handleBuyerChange = React.useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      onChange({
+        ...filters,
+        buyer: e.currentTarget.value,
       });
     },
     [onChange, filters]
@@ -27,9 +56,17 @@ function RecordSearchFilters(props: Props) {
     <div>
       <Input
         placeholder="Search text..."
-        value={filters.query}
-        onChange={handleQueryChange}
+        value={filters.textSearch}
+        onChange={handleTextSearchChange}
       />
+      { buyers && (
+        <Select
+          placeholder="Select buyer"
+          onChange={handleBuyerChange}
+          optionFilterProp="label"
+          options={buyers.map((buyer) => ({value: buyer.id, label: buyer.name})) }
+        />
+      )}
     </div>
   );
 }

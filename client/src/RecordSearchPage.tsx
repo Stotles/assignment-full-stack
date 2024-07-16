@@ -21,7 +21,8 @@ const PAGE_SIZE = 10;
 function RecordSearchPage() {
   const [page, setPage] = React.useState<number>(1);
   const [searchFilters, setSearchFilters] = React.useState<SearchFilters>({
-    query: "",
+    textSearch: "",
+    buyer: ""
   });
 
   const [records, setRecords] = React.useState<
@@ -34,7 +35,7 @@ function RecordSearchPage() {
     void (async () => {
       const api = new Api();
       const response = await api.searchRecords({
-        textSearch: searchFilters.query,
+        textSearch: searchFilters.textSearch,
         limit: PAGE_SIZE,
         offset: PAGE_SIZE * (page - 1),
       });
