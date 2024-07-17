@@ -46,7 +46,6 @@ function RecordSearchFilters(props: Props) {
 
   const handleBuyerChange = React.useCallback(
     (value : string) => {
-      console.log("handle buyer change", value)
       onChange({
         ...filters,
         buyer: value,

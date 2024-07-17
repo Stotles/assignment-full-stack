@@ -52,7 +52,6 @@ function RecordSearchPage() {
   }, [searchFilters, page]);
 
   const handleChangeFilters = React.useCallback((newFilters: SearchFilters) => {
-    console.log("handle change filters", newFilters)
     setSearchFilters(newFilters);
     setPage(1); // reset pagination state
   }, []);

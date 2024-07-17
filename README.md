@@ -53,3 +53,12 @@ If for any reason the database becomes unusable, you can rebuild it using `./res
 ## The task
 
 All the instructions are available [here](https://www.notion.so/stotles/Full-stack-software-engineer-work-sample-assignment-ae7c64e08f2a42a097d16cee4bc661fc).
+
+# Implementations comments
+Because this is a test with limited time, I was focus on acheiving the tash requirements, and only did minimal refactoring to facilitate my development.
+the database queries can probably be improved in performance, and certainly can be writen to make use of sequelite to implement the where clause (I havent used it before, so I just used my SQL knowledge).
+the buyers filter works for the current number of buyers, but it will need to be filtered and/or paginated once the number of buyers increases
+the page layout could be improved (example the 2 filters could be inline on a desktop)
+the currency of the project should be split into 2 fields (currency and frequency), this would allow the currency to be normalised, and to present the values with the symbol instead of the currency code.
+each buyer should also have a currency default, and or a global currency default. (or just not allowing empty currencies).
+

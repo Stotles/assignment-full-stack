@@ -69,8 +69,6 @@ async function searchRecords(
 
   query += " LIMIT :limit OFFSET :offset"
 
-  console.log("query", query)
-
   return await sequelize.query(
     query,
     {
