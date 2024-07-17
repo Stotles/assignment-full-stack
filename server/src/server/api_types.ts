@@ -1,5 +1,6 @@
 export type RecordSearchRequest = {
   textSearch?: string;
+  buyer?: string;
   offset: number;
   limit: number;
 };

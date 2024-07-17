@@ -28,6 +28,8 @@ function RecordSearchFilters(props: Props) {
     void (async () => {
       const api = new Api();
       const response = await api.buyersList();
+        //this should be done in the options but I am brute forcing it
+        response.buyers.unshift({id:"", name: "All buyers"})
         setBuyers(response.buyers);
     })();
   }, []);
@@ -43,10 +45,11 @@ function RecordSearchFilters(props: Props) {
   );
 
   const handleBuyerChange = React.useCallback(
-    (e: React.FormEvent<HTMLInputElement>) => {
+    (value : string) => {
+      console.log("handle buyer change", value)
       onChange({
         ...filters,
-        buyer: e.currentTarget.value,
+        buyer: value,
       });
     },
     [onChange, filters]
@@ -61,6 +64,7 @@ function RecordSearchFilters(props: Props) {
       />
       { buyers && (
         <Select
+          showSearch
           placeholder="Select buyer"
           onChange={handleBuyerChange}
           optionFilterProp="label"

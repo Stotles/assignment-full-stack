@@ -36,6 +36,7 @@ function RecordSearchPage() {
       const api = new Api();
       const response = await api.searchRecords({
         textSearch: searchFilters.textSearch,
+        buyer: searchFilters.buyer,
         limit: PAGE_SIZE,
         offset: PAGE_SIZE * (page - 1),
       });
@@ -51,6 +52,7 @@ function RecordSearchPage() {
   }, [searchFilters, page]);
 
   const handleChangeFilters = React.useCallback((newFilters: SearchFilters) => {
+    console.log("handle change filters", newFilters)
     setSearchFilters(newFilters);
     setPage(1); // reset pagination state
   }, []);

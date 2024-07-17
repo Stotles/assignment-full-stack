@@ -51,34 +51,38 @@ type RecordSearchFilters = {
  * Queries the database for procurement records according to the search filters.
  */
 async function searchRecords(
-  { textSearch, }: RecordSearchFilters,
+  { textSearch, buyer}: RecordSearchFilters,
   offset: number,
   limit: number
 ): Promise<ProcurementRecord[]> {
-  if (textSearch) {
-    return await sequelize.query(
-      "SELECT * FROM procurement_records WHERE title LIKE :textSearch or description like :textSearch LIMIT :limit OFFSET :offset",
-      {
-        model: ProcurementRecord, // by setting this sequelize will return a list of ProcurementRecord objects
-        replacements: {
-          textSearch: `%${textSearch}%`,
-          offset: offset,
-          limit: limit,
-        },
-      }
-    );
-  } else {
-    return await sequelize.query(
-      "SELECT * FROM procurement_records LIMIT :limit OFFSET :offset",
-      {
-        model: ProcurementRecord,
-        replacements: {
-          offset: offset,
-          limit: limit,
-        },
-      }
-    );
+  // in real prod I would use the ORM features of the database connecto to build the query
+  let query = "SELECT * FROM procurement_records"
+  if (textSearch || buyer){
+    query += " WHERE "
+    if (textSearch) {
+      query += "title LIKE :textSearch or description like :textSearch"
+      query += buyer ? " AND " : " "
+    }
+    if (buyer)
+      query += "buyer_id = :buyer"
   }
+
+  query += " LIMIT :limit OFFSET :offset"
+
+  console.log("query", query)
+
+  return await sequelize.query(
+    query,
+    {
+      model: ProcurementRecord, // by setting this sequelize will return a list of ProcurementRecord objects
+      replacements: {
+        textSearch: `%${textSearch}%`,
+        buyer: buyer,
+        offset: offset,
+        limit: limit,
+      },
+    }
+  );
 }
 
 /**
@@ -188,6 +192,7 @@ app.post("/api/records", async (req, res) => {
   const records = await searchRecords(
     {
       textSearch: requestPayload.textSearch,
+      buyer: requestPayload.buyer,
     },
     offset,
     limit + 1
@@ -209,8 +214,6 @@ app.post("/api/records", async (req, res) => {
  * Todo for large number of buyers this should be filtered and/or paginated too
  */
 app.get("/api/buyers", async (req, res) => {
-  const requestPayload = req.body as RecordSearchRequest;
-
   // We fetch all records.
   const buyers = await listBuyers();
 

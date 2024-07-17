@@ -1,5 +1,6 @@
 export type SearchRecordsRequest = {
   textSearch?: string;
+  buyer?: string;
   limit: number;
   offset: number;
 };
@@ -34,6 +35,7 @@ class Api {
   async searchRecords(
     request: SearchRecordsRequest
   ): Promise<SearchRecordsResponse> {
+    console.log("api request", request)
     const response = await fetch("/api/records", {
       method: "POST",
       headers: {
