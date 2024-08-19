@@ -1,4 +1,4 @@
-import express, { request } from "express";
+import express from "express";
 
 import { Sequelize } from "sequelize-typescript";
 import {
@@ -53,8 +53,9 @@ async function searchRecords(
   limit: number
 ): Promise<ProcurementRecord[]> {
   if (textSearch) {
+    // Updated SQL query to include condition for description
     return await sequelize.query(
-      "SELECT * FROM procurement_records WHERE title LIKE :textSearch LIMIT :limit OFFSET :offset",
+      "SELECT * FROM procurement_records WHERE title LIKE :textSearch OR description LIKE :textSearch LIMIT :limit OFFSET :offset",
       {
         model: ProcurementRecord, // by setting this sequelize will return a list of ProcurementRecord objects
         replacements: {
