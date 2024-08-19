@@ -1,3 +1,8 @@
+export enum RecordStage {
+  TENDER = "TENDER",
+  CONTRACT = "CONTRACT",
+}
+
 export type RecordSearchRequest = {
   textSearch?: string;
   offset: number;
@@ -17,6 +22,9 @@ export type ProcurementRecordDto = {
   publishDate: string;
   value: number | null;
   currency: string | null;
+  stage: RecordStage;
+  closeDate: string;
+  awardDate: string;
 };
 
 export type RecordSearchResponse = {

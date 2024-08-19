@@ -1,7 +1,7 @@
 import { Table } from "antd";
 import { ColumnType } from "antd/lib/table";
 import React from "react";
-import { ProcurementRecord } from "./Api";
+import { ProcurementRecord, RecordStage } from "./Api";
 import ProcurementRecordPreviewModal from "./ProcurementRecordPreview";
 
 type Props = {
@@ -42,9 +42,29 @@ function RecordsTable(props: Props) {
       {
         title: "Value",
         render: (record: ProcurementRecord) =>
+          // TODO: Write util function to format currency
           record.value && record.currency
             ? `${record.value} ${record.currency}`
             : "N/A",
+      },
+      {
+        title: "Stage",
+        render: (record: ProcurementRecord) => {
+          // TODO: Write util function to clean up dates
+          if (record.stage === RecordStage.CONTRACT) {
+            return `Awarded on ${record.awardDate}`;
+          }
+
+          if (record.closeDate == null) {
+            return "Open";
+          }
+
+          if (new Date(record.closeDate) > new Date()) {
+            return `Open until ${record.closeDate}`;
+          }
+
+          return "Closed";
+        },
       },
     ];
   }, []);

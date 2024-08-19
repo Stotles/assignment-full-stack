@@ -1,3 +1,8 @@
+export enum RecordStage {
+  TENDER = "TENDER",
+  CONTRACT = "CONTRACT",
+}
+
 export type SearchRecordsRequest = {
   textSearch?: string;
   limit: number;
@@ -11,6 +16,9 @@ export type ProcurementRecord = {
   publishDate: string;
   value: number | null;
   currency: string | null;
+  stage: RecordStage;
+  closeDate: string;
+  awardDate: string;
   buyer: {
     id: string;
     name: string;

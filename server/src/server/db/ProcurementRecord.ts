@@ -5,6 +5,7 @@ import {
   Model,
   Table,
 } from "sequelize-typescript";
+import { RecordStage } from "../api_types";
 
 @Table({ createdAt: false, updatedAt: false })
 export class ProcurementRecord extends Model {
@@ -24,7 +25,7 @@ export class ProcurementRecord extends Model {
   buyer_id!: string;
 
   @Column
-  stage!: "TENDER" | "CONTRACT";
+  stage!: RecordStage;
 
   @AllowNull
   @Column(DataType.STRING)
