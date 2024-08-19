@@ -59,7 +59,8 @@ async function searchRecords(
       {
         model: ProcurementRecord, // by setting this sequelize will return a list of ProcurementRecord objects
         replacements: {
-          textSearch: `${textSearch}%`,
+          // Update SQL query to search for text anywhere in the title using %
+          textSearch: `%${textSearch}%`,
           offset: offset,
           limit: limit,
         },
