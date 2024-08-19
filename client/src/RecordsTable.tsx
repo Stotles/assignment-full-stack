@@ -39,6 +39,13 @@ function RecordsTable(props: Props) {
         title: "Buyer name",
         render: (record: ProcurementRecord) => record.buyer.name,
       },
+      {
+        title: "Value",
+        render: (record: ProcurementRecord) =>
+          record.value && record.currency
+            ? `${record.value} ${record.currency}`
+            : "N/A",
+      },
     ];
   }, []);
   return (
