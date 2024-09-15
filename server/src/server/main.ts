@@ -54,11 +54,11 @@ async function searchRecords(
 ): Promise<ProcurementRecord[]> {
   if (textSearch) {
     return await sequelize.query(
-      "SELECT * FROM procurement_records WHERE title LIKE :textSearch LIMIT :limit OFFSET :offset",
+      "SELECT * FROM procurement_records WHERE title LIKE :textSearch OR description LIKE :textSearch LIMIT :limit OFFSET :offset",
       {
         model: ProcurementRecord, // by setting this sequelize will return a list of ProcurementRecord objects
         replacements: {
-          textSearch: `${textSearch}%`,
+          textSearch: `%${textSearch}%`,
           offset: offset,
           limit: limit,
         },
@@ -98,6 +98,11 @@ function serializeProcurementRecord(
     title: record.title,
     description: record.description,
     publishDate: record.publish_date,
+    currency: record.currency,
+    value: record.value,
+    closeDate: record.close_date,
+    awardedDate: record.award_date,
+    stage: record.stage,
     buyer: {
       id: buyer.id,
       name: buyer.name,
