@@ -19,7 +19,7 @@ function determineProcurementStage({ stage, closeDate, awardedDate }: Procuremen
     case 'TENDER':
 
       if(isNaN(formattedCloseDate.getTime())) {
-        console.log("Invalid close date")
+        console.error("Invalid close date")
         return;
       }
 
@@ -34,7 +34,7 @@ function determineProcurementStage({ stage, closeDate, awardedDate }: Procuremen
     case 'CONTRACT':
 
       if(isNaN(formattedAwardedDate.getTime())) {
-        console.log("Invalid awarded date")
+        console.error("Invalid awarded date")
         return;
       }
 

@@ -1,9 +1,7 @@
 import { Input } from "antd";
 import React from "react";
+import { SearchFilters } from "./RecordSearchPage";
 
-export type SearchFilters = {
-  query: string;
-};
 
 type Props = {
   filters: SearchFilters;
@@ -17,7 +15,7 @@ function RecordSearchFilters(props: Props) {
     (e: React.FormEvent<HTMLInputElement>) => {
       onChange({
         ...filters,
-        query: e.currentTarget.value,
+        searchQuery: e.currentTarget.value,
       });
     },
     [onChange, filters]
@@ -27,7 +25,7 @@ function RecordSearchFilters(props: Props) {
     <div>
       <Input
         placeholder="Search text..."
-        value={filters.query}
+        value={filters.searchQuery}
         onChange={handleQueryChange}
       />
     </div>

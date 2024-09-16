@@ -1,8 +1,9 @@
-import { Button } from "antd";
+import { Button, Space } from "antd";
 import React from "react";
 import Api, { ProcurementRecord } from "./Api";
-import RecordSearchFilters, { SearchFilters } from "./RecordSearchFilters";
+import RecordSearchFilters from "./RecordSearchFilters";
 import RecordsTable from "./RecordsTable";
+import BuyerSelectFilters from "./BuyerSelectFilters";
 
 /**
  * This component implements very basic pagination.
@@ -16,12 +17,18 @@ import RecordsTable from "./RecordsTable";
  *
  */
 
+export type SearchFilters = {
+  searchQuery: string;
+  buyerFilterId: string
+};
+
 const PAGE_SIZE = 10;
 
 function RecordSearchPage() {
   const [page, setPage] = React.useState<number>(1);
   const [searchFilters, setSearchFilters] = React.useState<SearchFilters>({
-    query: "",
+    searchQuery: "",
+    buyerFilterId: ""
   });
 
   const [records, setRecords] = React.useState<
@@ -34,7 +41,8 @@ function RecordSearchPage() {
     void (async () => {
       const api = new Api();
       const response = await api.searchRecords({
-        textSearch: searchFilters.query,
+        textSearch: searchFilters.searchQuery,
+        buyerId: searchFilters.buyerFilterId,
         limit: PAGE_SIZE,
         offset: PAGE_SIZE * (page - 1),
       });
@@ -60,11 +68,16 @@ function RecordSearchPage() {
 
   return (
     <>
-      <RecordSearchFilters
-        filters={searchFilters}
-        onChange={handleChangeFilters}
-      />
-      {records && (
+    <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+      <BuyerSelectFilters
+          filters={searchFilters}
+          onSelect={handleChangeFilters}
+        />
+        <RecordSearchFilters
+          filters={searchFilters}
+          onChange={handleChangeFilters}
+        />
+         {records && (
         <>
           <RecordsTable records={records} />
           {!reachedEndOfSearch && (
@@ -72,6 +85,7 @@ function RecordSearchPage() {
           )}
         </>
       )}
+    </Space>
     </>
   );
 }

@@ -67,3 +67,22 @@ All the instructions are available [here](https://www.notion.so/stotles/Full-sta
   - **pages** - To store page layout
   - **services** - To store implementaion of classes to integrate with back end services
   - **utils** - To store common utility functions
+
+* Implement debounce search functionality to avoid frequent search when user typing search query text 
+
+* Improve layout of server aplication to standard folder structures by creating following folders to store relevant files
+  - **config** -  To have files related to database configurarion and other application specific configurations
+  - **routes** -  To define all API endpoints
+  - **controllets** - will contain functions which handles request and responses
+  - **middlewares** -  if there any requirement to implement middleware tasks like logging , authentication etc.,
+  - **services** - To have business service logic and to interact with database layers
+  - **models** - To store data transfer models
+  - **utils** - To store common utility functions
+
+* Improve UI design alignment according to wireframe or figma design
+
+* Improve performance by implementing following best practises
+  - Using Full text indexes like MATCH, CONTAINS  to search against larger text. But depends on database vendor and looks like Sequlize not yet supporting Full text indexes.Need more investigation to use this feature
+  - Caching frequently queried data
+  - Using pagination or limit search for buyer filter dropdown similar to genral search field
+
