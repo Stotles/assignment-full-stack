@@ -5,6 +5,8 @@ import {
   ProcurementRecordDto,
   RecordSearchRequest,
   RecordSearchResponse,
+  BuyerSearchRequest,
+  BuyerRecordsResponse
 } from "./api_types";
 import { Buyer } from "./db/Buyer";
 import { ProcurementRecord } from "./db/ProcurementRecord";
@@ -42,40 +44,57 @@ app.use(express.json());
 
 type RecordSearchFilters = {
   textSearch?: string;
+  buyerId?: string;
 };
 
 /**
  * Queries the database for procurement records according to the search filters.
  */
 async function searchRecords(
-  { textSearch }: RecordSearchFilters,
+  { textSearch, buyerId }: RecordSearchFilters,
   offset: number,
   limit: number
 ): Promise<ProcurementRecord[]> {
-  if (textSearch) {
+
+    let query = "SELECT * FROM procurement_records";
+    let replacements: any = {
+      offset,
+      limit
+    }
+
+    if (textSearch) {
+      query += " WHERE (title LIKE :textSearch OR description LIKE :textSearch)";
+      replacements.textSearch = `%${textSearch}%`;
+    }
+
+    if (buyerId) {
+      query += `${textSearch ? " AND" : " WHERE"} buyer_id = :buyerId`;
+      replacements.buyerId = buyerId;
+    }
+
+    query += " LIMIT :limit OFFSET :offset";
+
+    return await sequelize.query(query, {
+      model: ProcurementRecord,
+      replacements: replacements,
+    });
+}
+
+/**
+ * Queries the database for buyers records according to the search filters.
+ */
+async function searchBuyers(
+  { textSearch }: RecordSearchFilters
+): Promise<Buyer[]> {
     return await sequelize.query(
-      "SELECT * FROM procurement_records WHERE title LIKE :textSearch LIMIT :limit OFFSET :offset",
+      "SELECT * FROM buyers WHERE name LIKE :textSearch",
       {
-        model: ProcurementRecord, // by setting this sequelize will return a list of ProcurementRecord objects
+        model: Buyer, // by setting this sequelize will return a list of Buyer objects
         replacements: {
-          textSearch: `${textSearch}%`,
-          offset: offset,
-          limit: limit,
+          textSearch: `%${textSearch}%`,
         },
       }
     );
-  } else {
-    return await sequelize.query(
-      "SELECT * FROM procurement_records LIMIT :limit OFFSET :offset",
-      {
-        model: ProcurementRecord,
-        replacements: {
-          offset: offset,
-          limit: limit,
-        },
-      }
-    );
-  }
 }
 
 /**
@@ -98,6 +117,11 @@ function serializeProcurementRecord(
     title: record.title,
     description: record.description,
     publishDate: record.publish_date,
+    currency: record.currency,
+    value: record.value,
+    closeDate: record.close_date,
+    awardedDate: record.award_date,
+    stage: record.stage,
     buyer: {
       id: buyer.id,
       name: buyer.name,
@@ -155,6 +179,7 @@ app.post("/api/records", async (req, res) => {
   const records = await searchRecords(
     {
       textSearch: requestPayload.textSearch,
+      buyerId: requestPayload.buyerId
     },
     offset,
     limit + 1
@@ -165,6 +190,27 @@ app.post("/api/records", async (req, res) => {
       records.slice(0, limit) // only return the number of records requested
     ),
     endOfResults: records.length <= limit, // in this case we've reached the end of results
+  };
+
+  res.json(response);
+});
+
+/**
+ * This endpoint implements basic way to the search buyers.
+ */
+app.post("/api/buyers", async (req, res) => {
+  const requestPayload = req.body as BuyerSearchRequest;
+
+  const { textSearch } = requestPayload;
+
+  const records = await searchBuyers(
+    {
+      textSearch
+    },
+  );
+
+  const response: BuyerRecordsResponse = {
+    records 
   };
 
   res.json(response);
